@@ -12,6 +12,8 @@ public interface UserService {
 
     List<User> findUserList();
 
+    List<UsersList> findUsersList();
+
     User findInfoByToken(String token);
 
     boolean add(UsersList usersList);

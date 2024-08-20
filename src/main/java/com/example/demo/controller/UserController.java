@@ -24,20 +24,34 @@ public class UserController {
 
     // 增加用户
     @PostMapping("")
-    public boolean add(@RequestBody UsersList usersList){
-        return userService.add(usersList);
+    public ResponseEntity<?> add(@RequestBody UsersList usersList){
+        System.out.println(usersList);
+        boolean sta= userService.add(usersList);
+        Map<String, Object> response = new HashMap<>();
+        response.put("code",20000);
+        response.put("data",true);
+        return ResponseEntity.ok(response);
     }
 
     // 删除用户
     @DeleteMapping("/{id}")
-    public void deleteStudent(@RequestParam("id") Integer id){
+    public ResponseEntity<?> deleteStudent(@RequestParam("id") Integer id){
+        System.out.println("delete"+id);
         userService.delete(id);
+        Map<String, Object> response = new HashMap<>();
+        response.put("code",20000);
+        response.put("data","删除成功");
+        return ResponseEntity.ok(response);
     }
 
     // 更改用户
     @PostMapping("/update/{id}")
-    public boolean update(@RequestBody UsersList usersList){
-        return userService.update(usersList);
+    public ResponseEntity<?> update(@RequestBody UsersList usersList){
+        boolean sta= userService.update(usersList);
+        Map<String, Object> response = new HashMap<>();
+        response.put("code",20000);
+        response.put("data",sta);
+        return ResponseEntity.ok(response);
     }
 
     // 查询用户
@@ -58,10 +72,26 @@ public class UserController {
         return userService.findUserList();
     }
 
+    // 所有用户信息
+    @GetMapping("/users/list")
+    public ResponseEntity<?> findUsersList(){
+        List<UsersList> user=userService.findUsersList();
+        System.out.println(user.size());
+        Map<String, Object> response = new HashMap<>();
+        response.put("code",20000);
+        response.put("data",user);
+        response.put("total",user.size());
+        return ResponseEntity.ok(response);
+    }
+
     // 登入账户信息
     @GetMapping("/info")
-    public User findInfoByToken(@RequestParam("token") String token){
-        return userService.findInfoByToken(token);
+    public ResponseEntity<?> findInfoByToken(@RequestParam("token") String token){
+        User user=userService.findInfoByToken(token);
+        Map<String, Object> response = new HashMap<>();
+        response.put("code",20000);
+        response.put("data",user);
+        return ResponseEntity.ok(response);
     }
 
     // 登录

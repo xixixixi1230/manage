@@ -42,7 +42,7 @@ public class UserServicelmpl implements UserService {
 
     // 更新
 //    @Override
-//    public int update(Integer id, String userName, String trueName, String roleIds, String password, String email, Integer gender, String address, String introduction, String phone, String avatarurl, Date createTime) {
+//    public int update(Integer id, String userName, String trueName, String roleIds, String password, String email, Integer gender, String address, String introduction, String phone, String avatarurl, String createTime) {
 //        return UserMapper.update(id, userName, trueName, roleIds, password, email, gender, address, introduction, phone, avatarurl,createTime);
 //    }
     public boolean update(UsersList usersList) {
@@ -72,6 +72,11 @@ public class UserServicelmpl implements UserService {
     @Override
     public List<User> findUserList() {
         return UserMapper.findUserList();
+    }
+
+    @Override
+    public List<UsersList> findUsersList() {
+        return UserMapper.findUsersList();
     }
 
     @Override

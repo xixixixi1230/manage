@@ -27,12 +27,15 @@ public interface UserMapper {
     @Select("select id, userName as userName, trueName as trueName,roleIds as roleIds,password as password,email as email,gender as gender,address as address,introduction as introduction,phone as phone,createTime as createTime from userslist where id = #{id}")
     UsersList findUsersListById(@Param("id") Integer id);
 
-    @Select("select name, password as password, role as role,token as token from users where name = #{name}")
+    @Select("select name, password as password, roles as roles,token as token from users where name = #{name}")
     User findUserById(@Param("name") String name);
 
-    @Select("select token, name as name,password as password, role as role  from users where token = #{token}")
+    @Select("select token, name as name,password as password, roles as roles  from users where token = #{token}")
     User findInfoByToken(@Param("token") String token);
 
-    @Select("select name, password as password, role as role,token as token from users")
+    @Select("select name, password as password, roles as roles,token as token from users")
     List<User> findUserList();
+
+    @Select("select id as id, userName as userName, trueName as trueName,roleIds as roleIds,password as password,email as email,gender as gender,address as address,introduction as introduction,phone as phone,createTime as createTime from userslist")
+    List<UsersList> findUsersList();
 }

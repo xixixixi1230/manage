@@ -27,5 +27,5 @@ public class UsersList {
     private String introduction;
     private String phone;
     private String avatarurl;
-    private Date createTime;
+    private String createTime;
 }
