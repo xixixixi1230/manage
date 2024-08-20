@@ -86,7 +86,7 @@
       </el-table-column>
       <el-table-column prop="userName" label="用户名" sortable="custom" />
       <el-table-column prop="trueName" label="真实姓名" sortable="custom" />
-      <el-table-column prop="roleList" label="角色" sortable="custom" />
+      <!-- <el-table-column prop="roleList" label="角色" sortable="custom" /> -->
       <el-table-column prop="createTime" label="创建时间" sortable="custom" />
       <el-table-column
         prop="status"
@@ -179,7 +179,7 @@
         <el-form-item label="电话">
           <el-input v-model="userEditForm.phone" />
         </el-form-item>
-        <el-form-item label="角色" prop="roleIds">
+        <!-- <el-form-item label="角色" prop="roleIds">
           <el-select
             v-model="userEditForm.roleIds"
             multiple
@@ -192,8 +192,8 @@
               :value="role.id"
             />
           </el-select>
-        </el-form-item>
-        <el-form-item label="头像">
+        </el-form-item> -->
+        <!-- <el-form-item label="头像"> -->
           <!-- <el-upload
                         class="avatar-uploader"
                         action=""
@@ -215,7 +215,7 @@
           </el-upload> -->
 
           <!-- <el-button v-if="avatarUploadData.raw" size="mini" @click="resetUploadData(false)">重置</el-button> -->
-        </el-form-item>
+        <!-- </el-form-item> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="userEditDialogVisible = false">取消</el-button>
@@ -257,8 +257,8 @@ export default {
       },
       userEditDialogVisible: false,
       allRoles: [
-        { id: 0, name: "普通用户" },
-        { id: 1, name: "管理用户" },
+        { id: 0, name: "editor" },
+        { id: 1, name: "admin" },
       ],
       userCreateRules: {
         userName: [
@@ -356,8 +356,27 @@ export default {
     },
     // 获取用户列表
     getUserList() {
+        function formatLocalDate(date) {
+            if(date==null||date.length==0){
+                return ''
+            }
+          return (
+            date.getFullYear() +
+            "-" +
+            (date.getMonth() + 1).toString().padStart(2, "0") +
+            "-" +
+            date.getDate().toString().padStart(2, "0")
+          );
+        }
+        let searchdata={
+            name:this.tableData.name,
+            minCreateTime:formatLocalDate(this.tableData.minCreateTime),
+            maxCreateTime:formatLocalDate(this.tableData.maxCreateTime)
+        }
+        console.log(searchdata);
+        
       // 调用getUsers接口
-      UserApi.getUsers(this.tableData).then((res) => {
+      UserApi.getUsers(searchdata).then((res) => {
         for (let j = 0; j < res.data.length; j++) {
           let arr = [];
           let ro = res.data[j].roleIds;
@@ -386,31 +405,28 @@ export default {
     },
     // 批量删除
     handleBatchDelete() {
-        console.log(this.tableData.selection);
+      console.log(this.tableData.selection);
       // 将tableData.selection中的id提取出来，传递给handleDelete
       this.$confirm("此操作将永久删除这些用户，是否继续？", "提示", {
         confirmButtonText: "确定",
         concelButtonText: "取消",
         typer: "warning",
-      })
-        .then(() => {
-          console.log(this.tableData.selection);
+      }).then(() => {
+        console.log(this.tableData.selection);
 
-          for (let i=0;i<this.tableData.selection.length;i++) {
-            console.log(i);
-            console.log(this.tableData.selection[i].id);
-            
-            UserApi.deleteUser(this.tableData.selection[i].id);
-          }
-          this.$message.success("删除成功");
-          // 有bug
-        })
-        .then(()=>{
+        for (let i = 0; i < this.tableData.selection.length; i++) {
+          console.log(i);
+          console.log(this.tableData.selection[i].id);
+
+          UserApi.deleteUser(this.tableData.selection[i].id).then(() => {
             this.getUserList();
-        })
-        .finally(() => {
-          location.reload();
-        });
+          });
+        }
+        this.$message.success("删除成功");
+        console.log("删除完成");
+
+        // 有bug
+      });
     },
     handleImportUser() {},
     //切换用户激活状态
@@ -418,6 +434,10 @@ export default {
     // 编辑用户信息
     handleEdit(row) {
       for (const key in this.userEditForm) {
+        console.log(key);
+        console.log(row[key]);
+        console.log(this.userEditForm[key]);
+        
         this.userEditForm[key] = row[key];
       }
       this.userEditDialogVisible = true;
@@ -430,14 +450,10 @@ export default {
         typer: "warning",
       }).then(() => {
         console.log(row[0]);
-        UserApi.deleteUser(row[0])
-          .then(() => {
-            this.$message.success("删除成功");
-            this.getUserList();
-          })
-          .finally(() => {
-            // location.reload();
-          });
+        UserApi.deleteUser(row[0]).then(() => {
+          this.$message.success("删除成功");
+          this.getUserList();
+        });
       });
     },
     resetQuery() {},
@@ -469,14 +485,27 @@ export default {
         this.userEditForm.roleIds = ro;
         console.log(this.userEditForm);
 
-        UserApi.addUser(this.userEditForm)
-          .then((res) => {
-            this.userEditDialogVisible = false;
-          })
-          .finally(() => {
-            location.reload();
-          });
+        UserApi.addUser(this.userEditForm).then((res) => {
+          this.userEditDialogVisible = false;
+          this.userEditForm = {
+            id: "",
+            userName: "",
+            trueName: "",
+            password: "",
+            email: "",
+            gender: "",
+            address: "",
+            introduction: "",
+            phone: "",
+            roleIds: [],
+            avatarurl: "",
+            createTime: "",
+          };
+          this.getUserList();
+        });
       } else {
+        console.log(this.userEditForm.roleIds);
+        
         console.log("更新用户");
         let ro = "";
         let ros = this.userEditForm.roleIds;
@@ -485,13 +514,24 @@ export default {
         }
         this.userEditForm.roleIds = ro;
         console.log(this.userEditForm);
-        UserApi.updateUser(this.userEditForm)
-          .then((res) => {
-            this.userEditDialogVisible = false;
-          })
-          .finally(() => {
-            location.reload();
-          });
+        UserApi.updateUser(this.userEditForm).then((res) => {
+          this.userEditDialogVisible = false;
+          this.userEditForm = {
+            id: "",
+            userName: "",
+            trueName: "",
+            password: "",
+            email: "",
+            gender: "",
+            address: "",
+            introduction: "",
+            phone: "",
+            roleIds: [],
+            avatarurl: "",
+            createTime: "",
+          };
+          this.getUserList();
+        });
       }
     },
   },

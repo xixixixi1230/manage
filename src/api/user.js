@@ -25,9 +25,11 @@ export function logout() {
 
 // 获取用户列表
 export function getUsers(data){
+  let {name,minCreateTime,maxCreateTime}=data;
   return request({
     url: 'http://localhost:8090/dev/user/users/list',
     method: 'get',
+    params: { name,minCreateTime,maxCreateTime }
   })
 }
 
