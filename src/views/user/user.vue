@@ -424,8 +424,6 @@ export default {
         }
         this.$message.success("删除成功");
         console.log("删除完成");
-
-        // 有bug
       });
     },
     handleImportUser() {},
@@ -456,7 +454,13 @@ export default {
         });
       });
     },
-    resetQuery() {},
+    resetQuery() {
+      this.tableData.name="";
+      this.tableData.minCreateTime="";
+      this.tableData.maxCreateTime="";
+      this.getUserList();
+      // location.reload();
+    },
     handleSortChange() {},
     handleAvatarChange(file) {},
     // 添加或更新用户
