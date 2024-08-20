@@ -1,16 +1,14 @@
 package com.example.demo.controller;
 
-import com.example.demo.domain.JwtUtil;
 import com.example.demo.domain.User;
 import com.example.demo.domain.UsersList;
 import com.example.demo.service.UserService;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,9 +72,35 @@ public class UserController {
 
     // 所有用户信息
     @GetMapping("/users/list")
-    public ResponseEntity<?> findUsersList(){
+    public ResponseEntity<?> findUsersList(@RequestParam("name") String name,@RequestParam("minCreateTime") String minCreateTime,@RequestParam("maxCreateTime") String maxCreateTime){
         List<UsersList> user=userService.findUsersList();
-        System.out.println(user.size());
+        if(name.length()!=0){
+            for(int i=user.size()-1;i>=0;i--){
+                if(!user.get(i).getUserName().equals(name)){
+                    user.remove(i);
+                }
+            }
+        }
+        if(minCreateTime.length()!=0){
+            for(int i=user.size()-1;i>=0;i--){
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate mindate = LocalDate.parse(minCreateTime, formatter);
+                LocalDate date = LocalDate.parse(user.get(i).getCreateTime(), formatter);
+                if(date.isBefore(mindate)){
+                    user.remove(i);
+                }
+            }
+        }
+        if(maxCreateTime.length()!=0){
+            for(int i=user.size()-1;i>=0;i--){
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate maxdate = LocalDate.parse(maxCreateTime, formatter);
+                LocalDate date = LocalDate.parse(user.get(i).getCreateTime(), formatter);
+                if(date.isAfter(maxdate)){
+                    user.remove(i);
+                }
+            }
+        }
         Map<String, Object> response = new HashMap<>();
         response.put("code",20000);
         response.put("data",user);
@@ -101,56 +125,36 @@ public class UserController {
         String password = loginRequest.getPassword();
 
         User user=findUserById(username);
-        System.out.println(user);
-
-        // 生成JWT令牌
-//        String token = jwtUtil.generateToken(username);
         Map<String, Object> response = new HashMap<>();
-        response.put("message", "登录成功");
-        response.put("username", username);
-        response.put("code",20000);
-        response.put("token",user.getToken());
-//        response.put("token", token); // 将生成的令牌添加到响应中
+        if(user.getPassword().equals(password)){
+            response.put("message", "登录成功");
+            response.put("username", username);
+            response.put("code",20000);
+            response.put("token",user.getToken());
+            return ResponseEntity.ok(response);
+        }
+        else{
+            response.put("message", "用户名或密码不匹配");
+            response.put("code",50012);
+            return ResponseEntity.ok(response);
+        }
 
-        return ResponseEntity.ok(response);
+
+
+
     }
 }
+
 
 class UserLoginRequest {
     private String username;
     private String password;
 
-    // Getters and Setters
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
         return password;
     }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-}
-
-
-@Data
-class UserListRequest{
-    private String userName;
-    private String trueName;
-    private String roleIds;
-    private String password;
-    private String email;
-    private Integer gender;
-    private String address;
-    private String introduction;
-    private String phone;
-    private String avatarurl;
-
-
 }
