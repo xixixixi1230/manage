@@ -60,8 +60,14 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    // proxy:proxyTable,
-    before: require('./mock/mock-server.js')
+    proxy:{
+      '/api': {
+        target: 'http://localhost:8090', // 后端服务的地址
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    },
+    // before: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

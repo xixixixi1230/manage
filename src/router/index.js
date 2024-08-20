@@ -105,18 +105,6 @@ export const constantRoutes = [
         name: 'User',
         meta: { title: '用户'}
       },
-      {
-        path: 'role',
-        component: () => import('@/views/user/role'),
-        name: 'Role',
-        meta: { title: '角色'}
-      },
-      {
-        path: 'permission',
-        component: () => import('@/views/user/permission'),
-        name: 'Permission',
-        meta: { title: '权限'}
-      },
     ]
   },
   {
