@@ -3,77 +3,31 @@
     <!-- 搜索表单 -->
     <el-form :model="tableData" label-width="80px" :inline="true" size="small">
       <el-form-item label="用户名称">
-        <el-input
-          v-model="tableData.name"
-          placeholder="请输入用户名称"
-          clearable=""
-        >
+        <el-input v-model="tableData.name" placeholder="请输入用户名称" clearable="">
         </el-input>
       </el-form-item>
       <el-form-item label="创建时间">
-        <el-date-picker
-          v-model="tableData.minCreateTime"
-          type="datetime"
-          placeholder="起始时间"
-          class="date-picker"
-        >
+        <el-date-picker v-model="tableData.minCreateTime" type="datetime" placeholder="起始时间" class="date-picker">
         </el-date-picker>
-        <el-date-picker
-          v-model="tableData.maxCreateTime"
-          type="datetime"
-          placeholder="截止时间"
-          class="date-picker"
-        >
+        <el-date-picker v-model="tableData.maxCreateTime" type="datetime" placeholder="截止时间" class="date-picker">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="getUserList"
-          >搜索</el-button
-        >
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
-        >
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="getUserList">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
     <!-- 用户操作按钮 -->
     <div>
-      <el-button
-        type="primary"
-        plain
-        icon="el-icon-plus"
-        size="mini"
-        @click="handleCreateUser"
-        >新增</el-button
-      >
-      <el-button
-        type="danger"
-        plain
-        icon="el-icon-delete"
-        size="mini"
-        @click="handleBatchDelete"
-        >删除</el-button
-      >
-      <el-button
-        type="info"
-        plain
-        icon="el-icon-upload2"
-        size="mini"
-        @click="handleImportUser"
-        >导入</el-button
-      >
+      <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleCreateUser">新增</el-button>
+      <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="handleBatchDelete">删除</el-button>
+      <el-button type="info" plain icon="el-icon-upload2" size="mini" @click="handleImportUser">导入</el-button>
     </div>
 
     <!-- 用户列表 -->
-    <el-table
-      :data="tableData.list"
-      @selection-change="(val) => (tableData.selection = val)"
-      @sort-change="handleSortChange"
-    >
+    <el-table :data="tableData.list" @selection-change="(val) => (tableData.selection = val)"
+      @sort-change="handleSortChange">
       <el-table-column type="index" width="60" />
       <el-table-column type="selection" width="50" />
       <el-table-column width="50">
@@ -88,69 +42,32 @@
       <el-table-column prop="trueName" label="真实姓名" sortable="custom" />
       <!-- <el-table-column prop="roleList" label="角色" sortable="custom" /> -->
       <el-table-column prop="createTime" label="创建时间" sortable="custom" />
-      <el-table-column
-        prop="status"
-        label="是否激活"
-        sortable="custom"
-        width="100"
-      >
+      <el-table-column prop="status" label="是否激活" sortable="custom" width="100">
         <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.status"
-            :active-value="1"
-            :inactive-value="0"
-            @change="handleSwitch(scope.row)"
-          />
+          <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
+            @change="handleSwitch(scope.row)" />
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-            icon="el-icon-edit"
-            @click="handleEdit(scope.row)"
-            >编辑</el-button
-          >
-          <el-button
-            type="text"
-            size="small"
-            icon="el-icon-delete"
-            style="color: red"
-            @click="handleDelete([scope.row.id])"
-            >删除</el-button
-          >
+          <el-button type="text" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button type="text" size="small" icon="el-icon-delete" style="color: red"
+            @click="handleDelete([scope.row.id])">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 分页功能------在后端实现 -->
-    <el-pagination
-      class="pagination"
-      @size-change="getUserList"
-      @current-change="getUserList"
-      :current-page.sync="tableData.pageNum"
-      :page-sizes="[10, 20, 30, 40]"
-      :page-size.sync="tableData.pageSize"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="tableData.total"
-    >
+    <el-pagination class="pagination" @size-change="getUserList" @current-change="getUserList"
+      :current-page.sync="tableData.pageNum" :page-sizes="[10, 20, 30, 40]" :page-size.sync="tableData.pageSize"
+      layout="total, sizes, prev, pager, next, jumper" :total="tableData.total">
     </el-pagination>
 
     <!-- 用户编辑/创建窗口 -->
-    <el-dialog
-      class="user-edit-dialog"
-      :title="userEditForm.id ? '用户编辑' : '新增用户'"
-      :visible.sync="userEditDialogVisible"
-      width="50%"
-      top="8vh"
-    >
-      <el-form
-        ref="userEditForm"
-        status-icon
-        :model="userEditForm"
-        label-width="80px"
-      >
+    <el-dialog class="user-edit-dialog" :title="userEditForm.id ? '用户编辑' : '新增用户'" :visible.sync="userEditDialogVisible"
+      width="50%" top="8vh">
+      <el-form ref="userEditForm" status-icon :model="userEditForm" label-width="80px"
+        :rules="userEditForm.id ? userUpdateRules : userCreateRules">
         <el-form-item label="用户名" prop="userName">
           <el-input v-model="userEditForm.userName" />
         </el-form-item>
@@ -179,17 +96,8 @@
           <el-input v-model="userEditForm.phone" />
         </el-form-item>
         <el-form-item label="角色" prop="roleIds">
-          <el-select
-            v-model="userEditForm.roleIds"
-            multiple
-            placeholder="请选择角色"
-          >
-            <el-option
-              v-for="role in allRoles"
-              :key="role.id"
-              :label="role.name"
-              :value="role.id"
-            />
+          <el-select v-model="userEditForm.roleIds" multiple placeholder="请选择角色">
+            <el-option v-for="role in allRoles" :key="role.id" :label="role.name" :value="role.id" />
           </el-select>
         </el-form-item>
         <!-- <el-form-item label="头像"> -->
@@ -223,8 +131,8 @@
     </el-dialog>
   </div>
 </template>
-  
-  <script>
+
+<script>
 import * as UserApi from "@/api/user";
 export default {
   name: "User",
@@ -259,38 +167,50 @@ export default {
         { id: 0, name: "editor" },
         { id: 1, name: "admin" },
       ],
-      // userCreateRules: {
-      //   userName: [
-      //     {
-      //       required: true,
-      //       trigger: "blur",
-      //       validator: this.userNameValidator,
-      //     },
-      //   ],
-      //   password: [
-      //     {
-      //       required: true,
-      //       trigger: "change",
-      //       validator: this.passwordValidator,
-      //     },
-      //   ],
-      //   roleIds: [
-      //     { required: true, trigger: "change", validator: this.roleValidator },
-      //   ],
-      // },
-      // userUpdateRules: {
-      //   userName: [
-      //     {
-      //       required: true,
-      //       trigger: "blur",
-      //       validator: this.userNameValidator,
-      //     },
-      //   ],
-      //   password: [{ trigger: "change", validator: this.passwordValidator }],
-      //   roleId: [
-      //     { required: true, trigger: "change", validator: this.roleValidator },
-      //   ],
-      // },
+      userCreateRules: {
+        userName: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            min: 6,
+            max: 20,
+            message: "密码长度应在 6 到 20 个字符之间",
+            trigger: "change",
+          },
+        ],
+        roleIds: [
+          {
+            type: "array",
+            required: true,
+            message: "请选择至少一个角色",
+            trigger: "change",
+          },
+        ],
+      },
+      userUpdateRules: {
+        userName: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            min: 6,
+            max: 20,
+            message: "密码长度应在 6 到 20 个字符之间",
+            trigger: "change",
+          },
+        ],
+        roleIds: [
+          {
+            type: "array",
+            required: true,
+            message: "请选择至少一个角色",
+            trigger: "change",
+          },
+        ],
+      },
       currentEditRow: null, // 当前编辑行
     };
   },
@@ -298,10 +218,9 @@ export default {
     this.getUserList();
   },
   methods: {
-    // 用户名验证
+    // //用户名验证
     // userNameValidator(value, callback) {
-    //     console.log('用户名验证');
-
+    //   console.log("用户名验证");
     //   if (!value) {
     //     callback(new Error("请输入用户名"));
     //   } else if (
@@ -310,16 +229,11 @@ export default {
     //   ) {
     //     callback();
     //   } else {
-    //     // 使用接口判断用户名是否重名
-    //     // checkUserName(value).then(res=>{
-    //     //     callback(res.data.data?new Error('用户名已存在'):undefined)
-    //     // })
     //   }
     // },
-    // 密码验证
+    // //密码验证
     // passwordValidator(value, callback) {
-    //     console.log('密码验证');
-
+    //   console.log("密码验证");
     //   if (!value && this.userEditForm.id) {
     //     callback();
     //   } else if (!value || value.length < 6) {
@@ -328,9 +242,9 @@ export default {
     //     callback();
     //   }
     // },
-    // 角色验证
+    // //角色验证
     // roleValidator(value, callback) {
-    //     console.log('角色验证');
+    //   console.log("角色验证");
 
     //   if (!value || value.length === 0) {
     //     callback(new Error("角色不能为空"));
@@ -375,7 +289,7 @@ export default {
         maxCreateTime: formatLocalDate(this.tableData.maxCreateTime),
       };
       console.log(searchdata);
-
+      this.tableData.pageNum=1;
       // 调用getUsers接口
       UserApi.getUsers(searchdata).then((res) => {
         for (let j = 0; j < res.data.length; j++) {
@@ -427,16 +341,12 @@ export default {
         console.log("删除完成");
       });
     },
-    handleImportUser() {},
+    handleImportUser() { },
     //切换用户激活状态
-    handleSwitch() {},
+    handleSwitch() { },
     // 编辑用户信息
     handleEdit(row) {
       for (const key in this.userEditForm) {
-        console.log(key);
-        console.log(row[key]);
-        console.log(this.userEditForm[key]);
-
         this.userEditForm[key] = row[key];
       }
       this.userEditDialogVisible = true;
@@ -460,94 +370,98 @@ export default {
       this.tableData.minCreateTime = "";
       this.tableData.maxCreateTime = "";
       this.getUserList();
-      // location.reload();
     },
-    handleSortChange() {},
-    handleAvatarChange(file) {},
+    handleSortChange() { },
+    handleAvatarChange(file) { },
     // 添加或更新用户
     addOrUpdateUser() {
-      if (this.userEditForm.id.length == 0) {
-        var currentDate = new Date();
-        function formatLocalDate(date) {
-          return (
-            date.getFullYear() +
-            "-" +
-            (date.getMonth() + 1).toString().padStart(2, "0") +
-            "-" +
-            date.getDate().toString().padStart(2, "0")
-          );
-        }
-        this.userEditForm.createTime = formatLocalDate(currentDate);
-        if (this.userEditForm.avatarurl.length == 0) {
-          this.userEditForm.avatarurl =
-            "https://img.picui.cn/free/2024/08/20/66c44b37d4284.jpg";
-        }
-        let ro = "";
-        let ros = this.userEditForm.roleIds;
-        for (let i = 0; i < ros.length; i++) {
-          ro += (ros[i]+'');
-        }
-        this.userEditForm.roleIds = ro;
-        console.log(this.userEditForm);
+      this.$refs.userEditForm.validate((valid) => {
+        if (valid) {
+          if (this.userEditForm.id.length == 0) {
+            var currentDate = new Date();
+            function formatLocalDate(date) {
+              return (
+                date.getFullYear() +
+                "-" +
+                (date.getMonth() + 1).toString().padStart(2, "0") +
+                "-" +
+                date.getDate().toString().padStart(2, "0")
+              );
+            }
+            this.userEditForm.createTime = formatLocalDate(currentDate);
+            if (this.userEditForm.avatarurl.length == 0) {
+              this.userEditForm.avatarurl =
+                "https://img.picui.cn/free/2024/08/20/66c44b37d4284.jpg";
+            }
+            let ro = "";
+            let ros = this.userEditForm.roleIds;
+            for (let i = 0; i < ros.length; i++) {
+              ro += ros[i] + "";
+            }
+            this.userEditForm.roleIds = ro;
+            console.log(this.userEditForm);
 
-        UserApi.addUser(this.userEditForm).then((res) => {
-          this.userEditDialogVisible = false;
-          this.userEditForm = {
-            id: "",
-            userName: "",
-            trueName: "",
-            password: "",
-            email: "",
-            gender: "",
-            address: "",
-            introduction: "",
-            phone: "",
-            roleIds: [],
-            avatarurl: "",
-            createTime: "",
-          };
-          this.getUserList();
-        });
-      } else {
-        console.log(this.userEditForm.roleIds);
+            UserApi.addUser(this.userEditForm).then((res) => {
+              this.userEditDialogVisible = false;
+              this.userEditForm = {
+                id: "",
+                userName: "",
+                trueName: "",
+                password: "",
+                email: "",
+                gender: "",
+                address: "",
+                introduction: "",
+                phone: "",
+                roleIds: [],
+                avatarurl: "",
+                createTime: "",
+              };
+              this.getUserList();
+            });
+          } else {
+            console.log(this.userEditForm.roleIds);
 
-        console.log("更新用户");
-        let ro = "";
-        let ros = this.userEditForm.roleIds;
-        for (let i = 0; i < ros.length; i++) {
-          ro += (ros[i]+'');;
+            console.log("更新用户");
+            let ro = "";
+            let ros = this.userEditForm.roleIds;
+            for (let i = 0; i < ros.length; i++) {
+              ro += ros[i] + "";
+            }
+            this.userEditForm.roleIds = ro;
+            console.log(this.userEditForm);
+            UserApi.updateUser(this.userEditForm).then((res) => {
+              this.userEditDialogVisible = false;
+              this.userEditForm = {
+                id: "",
+                userName: "",
+                trueName: "",
+                password: "",
+                email: "",
+                gender: "",
+                address: "",
+                introduction: "",
+                phone: "",
+                roleIds: [],
+                avatarurl: "",
+                createTime: "",
+              };
+              this.getUserList();
+            });
+          }
         }
-        this.userEditForm.roleIds = ro;
-        console.log(this.userEditForm);
-        UserApi.updateUser(this.userEditForm).then((res) => {
-          this.userEditDialogVisible = false;
-          this.userEditForm = {
-            id: "",
-            userName: "",
-            trueName: "",
-            password: "",
-            email: "",
-            gender: "",
-            address: "",
-            introduction: "",
-            phone: "",
-            roleIds: [],
-            avatarurl: "",
-            createTime: "",
-          };
-          this.getUserList();
-        });
-      }
+      })
     },
   },
 };
 </script>
-  
-  <style scoped>
+
+<style scoped>
 .date-picker {
   margin-right: 10px;
   width: 160px;
 }
+
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
@@ -555,9 +469,11 @@ export default {
   position: relative;
   overflow: hidden;
 }
+
 .avatar-uploader .el-upload:hover {
   border-color: #409eff;
 }
+
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
@@ -566,10 +482,10 @@ export default {
   line-height: 178px;
   text-align: center;
 }
+
 .avatar {
   width: 178px;
   height: 178px;
   display: block;
 }
 </style>
-  
