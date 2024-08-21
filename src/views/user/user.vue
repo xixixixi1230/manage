@@ -150,7 +150,6 @@
         status-icon
         :model="userEditForm"
         label-width="80px"
-        :rules="userEditForm.id ? userUpdateRules : userCreateRules"
       >
         <el-form-item label="用户名" prop="userName">
           <el-input v-model="userEditForm.userName" />
@@ -179,7 +178,7 @@
         <el-form-item label="电话">
           <el-input v-model="userEditForm.phone" />
         </el-form-item>
-        <!-- <el-form-item label="角色" prop="roleIds">
+        <el-form-item label="角色" prop="roleIds">
           <el-select
             v-model="userEditForm.roleIds"
             multiple
@@ -192,18 +191,18 @@
               :value="role.id"
             />
           </el-select>
-        </el-form-item> -->
+        </el-form-item>
         <!-- <el-form-item label="头像"> -->
-          <!-- <el-upload
+        <!-- <el-upload
                         class="avatar-uploader"
                         action=""
                         :auto-upload="false"
                         :show-file-list="false"
                         :on-change="file=>handleAvatarChange(file)"> -->
-          <!-- <img v-if="avatarUploadData.url" :src="avatarUploadData.url" class="avatar">
+        <!-- <img v-if="avatarUploadData.url" :src="avatarUploadData.url" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i> -->
-          <!-- </el-upload> -->
-          <!-- <el-upload
+        <!-- </el-upload> -->
+        <!-- <el-upload
             class="avatar-uploader"
             action="https://jsonplaceholder.typicode.com/posts/"
             :show-file-list="false"
@@ -214,7 +213,7 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload> -->
 
-          <!-- <el-button v-if="avatarUploadData.raw" size="mini" @click="resetUploadData(false)">重置</el-button> -->
+        <!-- <el-button v-if="avatarUploadData.raw" size="mini" @click="resetUploadData(false)">重置</el-button> -->
         <!-- </el-form-item> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -260,38 +259,38 @@ export default {
         { id: 0, name: "editor" },
         { id: 1, name: "admin" },
       ],
-      userCreateRules: {
-        userName: [
-          {
-            required: true,
-            trigger: "blur",
-            validator: this.userNameValidator,
-          },
-        ],
-        password: [
-          {
-            required: true,
-            trigger: "change",
-            validator: this.passwordValidator,
-          },
-        ],
-        roleIds: [
-          { required: true, trigger: "change", validator: this.roleValidator },
-        ],
-      },
-      userUpdateRules: {
-        userName: [
-          {
-            required: true,
-            trigger: "blur",
-            validator: this.userNameValidator,
-          },
-        ],
-        password: [{ trigger: "change", validator: this.passwordValidator }],
-        roleId: [
-          { required: true, trigger: "change", validator: this.roleValidator },
-        ],
-      },
+      // userCreateRules: {
+      //   userName: [
+      //     {
+      //       required: true,
+      //       trigger: "blur",
+      //       validator: this.userNameValidator,
+      //     },
+      //   ],
+      //   password: [
+      //     {
+      //       required: true,
+      //       trigger: "change",
+      //       validator: this.passwordValidator,
+      //     },
+      //   ],
+      //   roleIds: [
+      //     { required: true, trigger: "change", validator: this.roleValidator },
+      //   ],
+      // },
+      // userUpdateRules: {
+      //   userName: [
+      //     {
+      //       required: true,
+      //       trigger: "blur",
+      //       validator: this.userNameValidator,
+      //     },
+      //   ],
+      //   password: [{ trigger: "change", validator: this.passwordValidator }],
+      //   roleId: [
+      //     { required: true, trigger: "change", validator: this.roleValidator },
+      //   ],
+      // },
       currentEditRow: null, // 当前编辑行
     };
   },
@@ -356,25 +355,27 @@ export default {
     },
     // 获取用户列表
     getUserList() {
-        function formatLocalDate(date) {
-            if(date==null||date.length==0){
-                return ''
-            }
-          return (
-            date.getFullYear() +
-            "-" +
-            (date.getMonth() + 1).toString().padStart(2, "0") +
-            "-" +
-            date.getDate().toString().padStart(2, "0")
-          );
+      function formatLocalDate(date) {
+        if (date == null || date.length == 0) {
+          return "";
         }
-        let searchdata={
-            name:this.tableData.name,
-            minCreateTime:formatLocalDate(this.tableData.minCreateTime),
-            maxCreateTime:formatLocalDate(this.tableData.maxCreateTime)
-        }
-        console.log(searchdata);
-        
+        return (
+          date.getFullYear() +
+          "-" +
+          (date.getMonth() + 1).toString().padStart(2, "0") +
+          "-" +
+          date.getDate().toString().padStart(2, "0")
+        );
+      }
+      let searchdata = {
+        pageNum: this.tableData.pageNum,
+        pageSize: this.tableData.pageSize,
+        name: this.tableData.name,
+        minCreateTime: formatLocalDate(this.tableData.minCreateTime),
+        maxCreateTime: formatLocalDate(this.tableData.maxCreateTime),
+      };
+      console.log(searchdata);
+
       // 调用getUsers接口
       UserApi.getUsers(searchdata).then((res) => {
         for (let j = 0; j < res.data.length; j++) {
@@ -382,9 +383,9 @@ export default {
           let ro = res.data[j].roleIds;
           for (let i = 0; i < ro.length; i++) {
             if (ro[i] == "1") {
-              arr.push("admin");
+              arr.push(1);
             } else {
-              arr.push("editor");
+              arr.push(0);
             }
           }
           res.data[j].roleIds = arr;
@@ -435,7 +436,7 @@ export default {
         console.log(key);
         console.log(row[key]);
         console.log(this.userEditForm[key]);
-        
+
         this.userEditForm[key] = row[key];
       }
       this.userEditDialogVisible = true;
@@ -455,9 +456,9 @@ export default {
       });
     },
     resetQuery() {
-      this.tableData.name="";
-      this.tableData.minCreateTime="";
-      this.tableData.maxCreateTime="";
+      this.tableData.name = "";
+      this.tableData.minCreateTime = "";
+      this.tableData.maxCreateTime = "";
       this.getUserList();
       // location.reload();
     },
@@ -484,7 +485,7 @@ export default {
         let ro = "";
         let ros = this.userEditForm.roleIds;
         for (let i = 0; i < ros.length; i++) {
-          ro += ros[i];
+          ro += (ros[i]+'');
         }
         this.userEditForm.roleIds = ro;
         console.log(this.userEditForm);
@@ -509,12 +510,12 @@ export default {
         });
       } else {
         console.log(this.userEditForm.roleIds);
-        
+
         console.log("更新用户");
         let ro = "";
         let ros = this.userEditForm.roleIds;
         for (let i = 0; i < ros.length; i++) {
-          ro += ros[i];
+          ro += (ros[i]+'');;
         }
         this.userEditForm.roleIds = ro;
         console.log(this.userEditForm);
