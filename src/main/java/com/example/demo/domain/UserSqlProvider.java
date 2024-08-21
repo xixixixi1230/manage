@@ -8,7 +8,7 @@ public class UserSqlProvider {
         sql.append("SELECT * FROM userslist WHERE 1=1");
 
         if (params.get("name") != null && !params.get("name").toString().isEmpty()) {
-            sql.append(" AND userName = #{name}");
+            sql.append(" AND userName LIKE CONCAT('%', #{name}, '%')");
         }
 
         if (params.get("minCreateTime") != null && !params.get("minCreateTime").toString().isEmpty()) {
