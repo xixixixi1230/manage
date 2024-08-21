@@ -4,10 +4,16 @@ import com.example.demo.dao.UserMapper;
 import com.example.demo.domain.User;
 import com.example.demo.domain.UsersList;
 import com.example.demo.service.UserService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServicelmpl implements UserService {
@@ -47,12 +53,18 @@ public class UserServicelmpl implements UserService {
     }
 
     @Override
-    public List<UsersList> findUsersList() {
-        return UserMapper.findUsersList();
+    public List<UsersList> findUsersList(String name,String minCreateTime,String maxCreateTime) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("minCreateTime", minCreateTime);
+        params.put("maxCreateTime", maxCreateTime);
+
+        return UserMapper.findUsersList(params);
     }
 
     @Override
     public User findInfoByToken(String token){
         return UserMapper.findInfoByToken(token);
     }
+
 }

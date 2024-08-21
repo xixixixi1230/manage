@@ -1,12 +1,14 @@
 package com.example.demo.dao;
 
 import com.example.demo.domain.User;
+import com.example.demo.domain.UserSqlProvider;
 import com.example.demo.domain.UsersList;
 import org.apache.ibatis.annotations.*;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface UserMapper {
@@ -36,6 +38,9 @@ public interface UserMapper {
     @Select("select name, password as password, roles as roles,token as token from users")
     List<User> findUserList();
 
-    @Select("select id as id, userName as userName, trueName as trueName,roleIds as roleIds,password as password,email as email,gender as gender,address as address,introduction as introduction,phone as phone,createTime as createTime from userslist")
-    List<UsersList> findUsersList();
+    @SelectProvider(type = UserSqlProvider.class, method = "findFilteredUsers")
+    List<UsersList> findUsersList(Map<String, Object> params);
+
+
 }
+

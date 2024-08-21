@@ -11,7 +11,7 @@ public interface UserService {
 
     List<User> findUserList();
 
-    List<UsersList> findUsersList();
+    List<UsersList> findUsersList(String name,String minCreateTime,String maxCreateTime);
 
     User findInfoByToken(String token);
 
@@ -22,4 +22,5 @@ public interface UserService {
     int delete(Integer id);
 
     UsersList findUsersListById(Integer id);
+
 }

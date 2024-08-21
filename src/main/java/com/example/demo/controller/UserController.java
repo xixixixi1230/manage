@@ -3,6 +3,9 @@ package com.example.demo.controller;
 import com.example.demo.domain.User;
 import com.example.demo.domain.UsersList;
 import com.example.demo.service.UserService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -72,39 +75,26 @@ public class UserController {
 
     // 所有用户信息
     @GetMapping("/users/list")
-    public ResponseEntity<?> findUsersList(@RequestParam("name") String name,@RequestParam("minCreateTime") String minCreateTime,@RequestParam("maxCreateTime") String maxCreateTime){
-        List<UsersList> user=userService.findUsersList();
-        if(name.length()!=0){
-            for(int i=user.size()-1;i>=0;i--){
-                if(!user.get(i).getUserName().equals(name)){
-                    user.remove(i);
-                }
-            }
-        }
-        if(minCreateTime.length()!=0){
-            for(int i=user.size()-1;i>=0;i--){
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                LocalDate mindate = LocalDate.parse(minCreateTime, formatter);
-                LocalDate date = LocalDate.parse(user.get(i).getCreateTime(), formatter);
-                if(date.isBefore(mindate)){
-                    user.remove(i);
-                }
-            }
-        }
-        if(maxCreateTime.length()!=0){
-            for(int i=user.size()-1;i>=0;i--){
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                LocalDate maxdate = LocalDate.parse(maxCreateTime, formatter);
-                LocalDate date = LocalDate.parse(user.get(i).getCreateTime(), formatter);
-                if(date.isAfter(maxdate)){
-                    user.remove(i);
-                }
-            }
-        }
+    public ResponseEntity<?> findUsersList(@RequestParam(value = "pageNum")Integer pageNum,
+                                           @RequestParam(value = "pageSize")Integer pageSize,
+                                           @RequestParam("name") String name,
+                                           @RequestParam("minCreateTime") String minCreateTime,
+                                           @RequestParam("maxCreateTime") String maxCreateTime,
+                                            Model model){
+        PageHelper.startPage(pageNum,pageSize);
+        List<UsersList> users=userService.findUsersList(name,minCreateTime,maxCreateTime);
+        // 获取分页信息
+        PageInfo<UsersList> userPageInfo = new PageInfo<>(users);
+
+        // 构建响应
         Map<String, Object> response = new HashMap<>();
-        response.put("code",20000);
-        response.put("data",user);
-        response.put("total",user.size());
+        response.put("total", userPageInfo.getTotal());
+        response.put("code", 20000);
+        response.put("data", userPageInfo.getList());
+
+        // 将分页信息添加到模型
+        model.addAttribute("userPageInfo", userPageInfo);
+
         return ResponseEntity.ok(response);
     }
 
